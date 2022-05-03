@@ -91,46 +91,6 @@ public class Board implements Constants {
     public Board() {
     }
 
-//    private boolean pion_side_noir_attack(int sq, int i) {
-//        if ((i & 7) != 0 && i + 7 == sq) return true;
-//        return (i & 7) != 7 && i + 9 == sq;
-//    }
-//
-//    private boolean pion_side_blanc_attack(int sq, int i) {
-//        if ((i & 7) != 0 && i - 9 == sq) return true;
-//        return (i & 7) != 7 && i - 7 == sq;
-//    }
-//
-//    private void pion_side_noir(int i) {
-//        if ((i & 7) != 0 && color[i + 7] == BLANC) {
-//            gen_push(i, i + 7, 17);
-//        }
-//        if ((i & 7) != 7 && color[i + 9] == BLANC) {
-//            gen_push(i, i + 9, 17);
-//        }
-//        if (color[i + 8] == EMPTY) {
-//            gen_push(i, i + 8, 16);
-//            if (i <= 15 && color[i + 16] == EMPTY) {
-//                gen_push(i, i + 16, 24);
-//            }
-//        }
-//    }
-//
-//    private void pion_side_blanc(int i) {
-//        if ((i & 7) != 0 && color[i - 9] == DARK) {
-//            gen_push(i, i - 9, 17);
-//        }
-//        if ((i & 7) != 7 && color[i - 7] == DARK) {
-//            gen_push(i, i - 7, 17);
-//        }
-//        if (color[i - 8] == EMPTY) {
-//            gen_push(i, i - 8, 16);
-//            if (i >= 48 && color[i - 16] == EMPTY) {
-//                gen_push(i, i - 16, 24);
-//            }
-//        }
-//    }
-
     public Board(Board board) {
         color = board.color;
         piece = board.piece;
@@ -160,25 +120,20 @@ public class Board implements Constants {
                         if (pion_side_blanc_attack.apply(sq, i)) return true;
                     } else if (pion_side_noir_attack.apply(sq, i)) return true;
                 } else {
+
+                    // recursive
                     for (int j = 0; j < nb_dir[piece[i]]; ++j) {
-                        for (int n = i; ; ) {
+
+                        int n = i;
+                        while (true) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
-                            if (n == -1) {
-                                break;
-                            }
+                            if (n == sq) return true;
+                            if (n == OUT||color[n] != EMPTY||!slide[piece[i]]) break;
 
-                            if (n == sq) {
-                                return true;
-                            }
-                            if (color[n] != EMPTY) {
-                                break;
-                            }
-
-                            if (!slide[piece[i]]) {
-                                break;
-                            }
                         }
+
                     }
+                    //
                 }
             }
         }
@@ -195,31 +150,31 @@ public class Board implements Constants {
                     for (int j = 0; j < nb_dir[piece[i]]; ++j) {
                         for (int n = i; ; ) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
-                            if (n == -1) {
-                                break;
-                            }
-                            if (color[n] != EMPTY) {
-                                if (color[n] == xside) {
-                                    gen_push(i, n, 1);
-                                }
-                                break;
-                            }
-                            gen_push(i, n, 0);
+                            if (n == -1) break;
 
-                            if (!slide[piece[i]]) {
-                                break;
-                            }
+                            if (gen_part(i, n)) break;
+
+                            if (!slide[piece[i]]) break;
                         }
                     }
                 }
             }
         }
-
-
         /* generate castle moves */
         ep();
         /* generate en passant moves */
         roques();
+    }
+
+    private boolean gen_part(int i, int n) {
+        if (color[n] != EMPTY) {
+            if (color[n] == xside) {
+                gen_push(i, n, 1);
+            }
+            return true;
+        }
+        gen_push(i, n, 0);
+        return false;
     }
 
     private void roques() {
