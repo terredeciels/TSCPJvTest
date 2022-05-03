@@ -161,11 +161,11 @@ public class FenToBoard implements Constants {
 
     static void setStone(int j, int i, int stone) {
         int _case = 56 - 8 * i + j;
-        board.piece[_case]
+        board.etats[_case].type
                 = abs(stone) == 0 ? 6
                 : abs(stone) == 6 ? 5
                 : abs(stone) == 5 ? 0 : abs(stone);
-        board.color[_case]
+        board.etats[_case].color
                 = stone < 0 ? BLANC : stone > 0 ? DARK : EMPTY;
     }
 
