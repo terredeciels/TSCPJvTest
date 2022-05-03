@@ -1,5 +1,6 @@
 package perft;
 
+import tools.FenToBoard;
 import tscp.Board;
 import tscp.Constants;
 import tscp.Move;
@@ -9,14 +10,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import tools.FenToBoard;
 
 public class PerftCompare implements Constants {
 
     public static void main(String[] args) throws IOException {
         int maxDepth = 4;
         File directory = new File(".");
-        FileReader fileReader = new FileReader(directory.getCanonicalPath()+"/src/main/java/perft/perftsuite.epd");
+        FileReader fileReader = new FileReader(directory.getCanonicalPath() + "/src/main/java/perft/perftsuite.epd");
         BufferedReader reader = new BufferedReader(fileReader);
         String line;
         int passes = 0;
@@ -69,7 +69,7 @@ public class PerftCompare implements Constants {
                 return result;
             }
 
-            board.gen();
+            board.gen(board.side);
             List<Move> moves = board.pseudomoves;
             for (Move move : moves) {
                 if (board.makemove(move)) {

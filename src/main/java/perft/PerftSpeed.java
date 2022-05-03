@@ -1,13 +1,13 @@
 package perft;
 
 import perft.PerftCompare.PerftResult;
-
+import tools.FenToBoard;
 import tscp.Board;
+import tscp.Constants;
 import tscp.Move;
 
 import java.io.IOException;
 import java.util.List;
-import tools.FenToBoard;
 
 public class PerftSpeed {
 
@@ -37,7 +37,7 @@ public class PerftSpeed {
             result.moveCount++;
             return result;
         }
-        board.gen();
+        board.gen(board.side);
         List<Move> moves = board.pseudomoves;
         for (Move move : moves) {
             if (board.makemove(move)) {

@@ -2,6 +2,7 @@ package tscp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class Board implements Constants {
 
@@ -12,10 +13,12 @@ public class Board implements Constants {
     public int castle;
     public int ep;
     public List<Move> pseudomoves = new ArrayList<>();
-    private int fifty;
-    private UndoMove um = new UndoMove();
     public int halfMoveClock;
     public int plyNumber;
+    public String[] piece_char_light = {"P", "N", "B", "R", "Q", "K"};
+    public String[] piece_char_dark = {"p", "n", "b", "r", "q", "k"};
+    private int fifty;
+    private UndoMove um = new UndoMove();
 
     public Board() {
     }
@@ -45,35 +48,26 @@ public class Board implements Constants {
         for (int i = 0; i < 64; ++i) {
             if (color[i] == s) {
                 if (piece[i] == PAWN) {
-                    if (s == LIGHT)
-                    {
-                        if ((i & 7) != 0 && i - 9 == sq) {
-                            return true;
-                        }
-                        if ((i & 7) != 7 && i - 7 == sq) {
-                            return true;
-                        }
-                    } else {
-                        if ((i & 7) != 0 && i + 7 == sq) {
-                            return true;
-                        }
-                        if ((i & 7) != 7 && i + 9 == sq) {
-                            return true;
-                        }
-                    }
-                } else {
+                    if (s == LIGHT) {
+                        if (extracted(sq, i)) return true;
+                    } else if (extracted1(sq, i)) return true;
+                }
+
+                else {
                     for (int j = 0; j < nb_dir[piece[i]]; ++j) {
-                        for (int n = i;;) {
+                        for (int n = i; ; ) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
                             if (n == -1) {
                                 break;
                             }
+
                             if (n == sq) {
                                 return true;
                             }
                             if (color[n] != EMPTY) {
                                 break;
                             }
+
                             if (!slide[piece[i]]) {
                                 break;
                             }
@@ -84,41 +78,16 @@ public class Board implements Constants {
         }
         return false;
     }
-
-    public void gen() {
+    void fgen(int sq, int s, Function f){
         for (int i = 0; i < 64; ++i) {
             if (color[i] == side) {
                 if (piece[i] == PAWN) {
-                    if (side == LIGHT) {
-                        if ((i & 7) != 0 && color[i - 9] == DARK) {
-                            gen_push(i, i - 9, 17);
-                        }
-                        if ((i & 7) != 7 && color[i - 7] == DARK) {
-                            gen_push(i, i - 7, 17);
-                        }
-                        if (color[i - 8] == EMPTY) {
-                            gen_push(i, i - 8, 16);
-                            if (i >= 48 && color[i - 16] == EMPTY) {
-                                gen_push(i, i - 16, 24);
-                            }
-                        }
-                    } else {
-                        if ((i & 7) != 0 && color[i + 7] == LIGHT) {
-                            gen_push(i, i + 7, 17);
-                        }
-                        if ((i & 7) != 7 && color[i + 9] == LIGHT) {
-                            gen_push(i, i + 9, 17);
-                        }
-                        if (color[i + 8] == EMPTY) {
-                            gen_push(i, i + 8, 16);
-                            if (i <= 15 && color[i + 16] == EMPTY) {
-                                gen_push(i, i + 16, 24);
-                            }
-                        }
-                    }
-                } else {
+                    if (side == LIGHT) extracted(i);
+                    else extracted1(i);
+                }
+                else {
                     for (int j = 0; j < nb_dir[piece[i]]; ++j) {
-                        for (int n = i;;) {
+                        for (int n = i; ; ) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
                             if (n == -1) {
                                 break;
@@ -130,6 +99,38 @@ public class Board implements Constants {
                                 break;
                             }
                             gen_push(i, n, 0);
+
+                            if (!slide[piece[i]]) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void gen(int side) {
+        for (int i = 0; i < 64; ++i) {
+            if (color[i] == side) {
+                if (piece[i] == PAWN) {
+                    if (side == LIGHT) extracted(i);
+                    else extracted1(i);
+                }
+                else {
+                    for (int j = 0; j < nb_dir[piece[i]]; ++j) {
+                        for (int n = i; ; ) {
+                            n = mailbox[mailbox64[n] + offset[piece[i]][j]];
+                            if (n == -1) {
+                                break;
+                            }
+                            if (color[n] != EMPTY) {
+                                if (color[n] == xside) {
+                                    gen_push(i, n, 1);
+                                }
+                                break;
+                            }
+                            gen_push(i, n, 0);
+
                             if (!slide[piece[i]]) {
                                 break;
                             }
@@ -139,24 +140,54 @@ public class Board implements Constants {
             }
         }
 
+
         /* generate castle moves */
-        if (side == LIGHT) {
-            if ((castle & 1) != 0) {
-                gen_push(E1, G1, 2);
-            }
-            if ((castle & 2) != 0) {
-                gen_push(E1, C1, 2);
-            }
-        } else {
-            if ((castle & 4) != 0) {
-                gen_push(E8, G8, 2);
-            }
-            if ((castle & 8) != 0) {
-                gen_push(E8, C8, 2);
+        ep();
+        /* generate en passant moves */
+        roques();
+    }
+
+    private boolean extracted1(int sq, int i) {
+        if ((i & 7) != 0 && i + 7 == sq) return true;
+        return (i & 7) != 7 && i + 9 == sq;
+    }
+
+    private boolean extracted(int sq, int i) {
+        if ((i & 7) != 0 && i - 9 == sq) return true;
+        return (i & 7) != 7 && i - 7 == sq;
+    }
+
+    private void extracted1(int i) {
+        if ((i & 7) != 0 && color[i + 7] == LIGHT) {
+            gen_push(i, i + 7, 17);
+        }
+        if ((i & 7) != 7 && color[i + 9] == LIGHT) {
+            gen_push(i, i + 9, 17);
+        }
+        if (color[i + 8] == EMPTY) {
+            gen_push(i, i + 8, 16);
+            if (i <= 15 && color[i + 16] == EMPTY) {
+                gen_push(i, i + 16, 24);
             }
         }
+    }
 
-        /* generate en passant moves */
+    private void extracted(int i) {
+        if ((i & 7) != 0 && color[i - 9] == DARK) {
+            gen_push(i, i - 9, 17);
+        }
+        if ((i & 7) != 7 && color[i - 7] == DARK) {
+            gen_push(i, i - 7, 17);
+        }
+        if (color[i - 8] == EMPTY) {
+            gen_push(i, i - 8, 16);
+            if (i >= 48 && color[i - 16] == EMPTY) {
+                gen_push(i, i - 16, 24);
+            }
+        }
+    }
+
+    private void roques() {
         if (ep != -1) {
             if (side == LIGHT) {
                 if ((ep & 7) != 0 && color[ep + 7] == LIGHT && piece[ep + 7] == PAWN) {
@@ -172,6 +203,24 @@ public class Board implements Constants {
                 if ((ep & 7) != 7 && color[ep - 7] == DARK && piece[ep - 7] == PAWN) {
                     gen_push(ep - 7, ep, 21);
                 }
+            }
+        }
+    }
+
+    private void ep() {
+        if (side == LIGHT) {
+            if ((castle & 1) != 0) {
+                gen_push(E1, G1, 2);
+            }
+            if ((castle & 2) != 0) {
+                gen_push(E1, C1, 2);
+            }
+        } else {
+            if ((castle & 4) != 0) {
+                gen_push(E8, G8, 2);
+            }
+            if ((castle & 8) != 0) {
+                gen_push(E8, C8, 2);
             }
         }
     }
@@ -366,10 +415,6 @@ public class Board implements Constants {
         }
     }
 
-
-
-    public String[] piece_char_light = {"P", "N", "B", "R", "Q", "K"};
-    public String[] piece_char_dark = {"p", "n", "b", "r", "q", "k"};
     public void print_board() {
         int i;
 
