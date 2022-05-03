@@ -58,7 +58,7 @@ public class FenToBoard implements Constants {
             ch = fen.charAt(index + 1);
             switch (ch) {
                 case 'w':
-                    setToPlay(LIGHT);
+                    setToPlay(BLANC);
                     break;
                 case 'b':
                     setToPlay(DARK);
@@ -131,7 +131,7 @@ public class FenToBoard implements Constants {
         }
         /*========== 6th field : full move number ==========*/
         if (index + 1 < fen.length() && fen.charAt(index) == ' ') {
-            if (board.side == LIGHT) {
+            if (board.side == BLANC) {
                 setPlyNumber(2 * (Integer.parseInt(fen.substring(index + 1)) - 1));
             } else {
                 setPlyNumber(2 * (Integer.parseInt(fen.substring(index + 1)) - 1) + 1);
@@ -156,7 +156,7 @@ public class FenToBoard implements Constants {
 
     static void setToPlay(int side) {
         board.side = side;
-        board.xside = board.side == LIGHT ? DARK : LIGHT;
+        board.xside = board.side == BLANC ? DARK : BLANC;
     }
 
     static void setStone(int j, int i, int stone) {
@@ -166,7 +166,7 @@ public class FenToBoard implements Constants {
                 : abs(stone) == 6 ? 5
                 : abs(stone) == 5 ? 0 : abs(stone);
         board.color[_case]
-                = stone < 0 ? LIGHT : stone > 0 ? DARK : EMPTY;
+                = stone < 0 ? BLANC : stone > 0 ? DARK : EMPTY;
     }
 
     static int abs(int x) {
