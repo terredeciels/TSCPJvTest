@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import static java.util.Arrays.stream;
 import static java.util.stream.IntStream.range;
 
 public class Board implements Constants {
@@ -42,17 +43,17 @@ public class Board implements Constants {
             }
         }
     };
-    Consumer<Integer> pion_side_blanc = (i) -> {
-        if ((i & 7) != 0 && etats[i - 9].color == DARK) {
-            gen_push(i, i - 9, 17);
+    Consumer<Integer> pion_side_blanc = (c) -> {
+        if ((c & 7) != 0 && etats[c - 9].color == DARK) {
+            gen_push(c, c - 9, 17);
         }
-        if ((i & 7) != 7 && etats[i - 7].color == DARK) {
-            gen_push(i, i - 7, 17);
+        if ((c & 7) != 7 && etats[c - 7].color == DARK) {
+            gen_push(c, c - 7, 17);
         }
-        if (etats[i - 8].color == EMPTY) {
-            gen_push(i, i - 8, 16);
-            if (i >= 48 && etats[i - 16].color == EMPTY) {
-                gen_push(i, i - 16, 24);
+        if (etats[c - 8].color == EMPTY) {
+            gen_push(c, c - 8, 16);
+            if (c >= 48 && etats[c - 16].color == EMPTY) {
+                gen_push(c, c - 16, 24);
             }
         }
     };
@@ -78,6 +79,14 @@ public class Board implements Constants {
         um = new UndoMove();
     }
 
+//    Function<Integer, Predicate> fin_check = s -> {
+//        stream(CASES).forEach(c -> {
+//                    if (etats[c].type == KING && etats[c].color == s) return attack(c, s ^ 1);
+//                }
+//        );
+//        return true; // shouldn't get here
+//    };
+
     private boolean in_check(int s) {
         for (int i = 0; i < 64; ++i) {
             if (etats[i].type == KING && etats[i].color == s) {
@@ -95,13 +104,12 @@ public class Board implements Constants {
                         if (pion_side_blanc_attack.apply(sq, c)) return true;
                     } else if (pion_side_noir_attack.apply(sq, c)) return true;
                 } else {
-
                     // recursive ?
                     for (int dir = 0; dir < nb_dir[etats[c].type]; ++dir) {
 
                         int _c = c;
                         do {
-                            _c = mailbox[mailbox64[_c] + offset[etats[c].type][dir]];
+                            _c = getMailbox(etats[c].type, dir, _c);
                             if (_c == sq) return true;
                         } while (_c != OUT && etats[_c].color == EMPTY && slide[etats[c].type]);
 
@@ -114,33 +122,34 @@ public class Board implements Constants {
     }
 
     public void gen(int side) {
-        for (int c = 0; c < 64; ++c) {
-            int piece = etats[c].type;
-            if (etats[c].color == side) {
-                if (piece == PAWN) {
-                    if (side == BLANC) pion_side_blanc.accept(c);
-                    else pion_side_noir.accept(c);
-                } else {
-                    for (int dir = 0; dir < nb_dir[piece]; ++dir) {
-                        int _c = c;
-                        do _c = mailbox[mailbox64[_c] + offset[piece][dir]];
-                        while (_c != OUT && !gen_part(c, _c) && slide[piece]);
-                    }
-                }
-            }
-        }
+        stream(CASES).filter(c -> etats[c].color == side).forEach(c -> {
+            int type = etats[c].type;
+            if (type == PAWN) if (side == BLANC) pion_side_blanc.accept(c);
+            else pion_side_noir.accept(c);
+            else range(0, nb_dir[type]).forEach(dir -> {
+                int _c = c;
+                do _c = getMailbox(type, dir, _c);
+                while (_c != OUT && !gen_part(c, _c) && slide[type]);
+            });
+        });
+
         /* generate castle moves */
         ep();
         /* generate en passant moves */
         roques();
     }
 
-    private boolean gen_part(int i, int n) {
-        if (etats[n].color != EMPTY) {
-            if (etats[n].color == xside) gen_push(i, n, 1);
+    private int getMailbox(int piece, int dir, int _c) {
+        return mailbox[mailbox64[_c] + offset[piece][dir]];
+    }
+
+    private boolean gen_part(int c, int _c) {
+        int color = etats[_c].color;
+        if (color != EMPTY) {
+            if (color == xside) gen_push(c, _c, 1);
             return true;
         }
-        gen_push(i, n, 0);
+        gen_push(c, _c, 0);
         return false;
     }
 

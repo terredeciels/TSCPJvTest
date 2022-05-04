@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7580e65b-2b63-4565-a332-82278ebe7b1f" name="Changes" comment="fonctions">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tscp/Etat.java" afterDir="false" />
+    <list default="true" id="7580e65b-2b63-4565-a332-82278ebe7b1f" name="Changes" comment="etats[].type et etats[].color">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tools/FenToBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tools/FenToBoard.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/F.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Constants.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +47,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ignore.preview.features.used": "true",
-    "last_opened_file_path": "C:/Users/gille/IdeaProjects/TSCPJvTest",
+    "last_opened_file_path": "C:/Users/gille/IdeaProjects/archives/BrouillonV1",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2"
@@ -61,7 +58,7 @@
       <recent name="tscp" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.PerftSpeed">
+  <component name="RunManager" selected="Application.PerftCompare">
     <configuration name="PerftCompare" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="perft.PerftCompare" />
       <module name="TSCPJvTest" />
@@ -90,8 +87,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.PerftSpeed" />
         <item itemvalue="Application.PerftCompare" />
+        <item itemvalue="Application.PerftSpeed" />
       </list>
     </recent_temporary>
   </component>
@@ -132,7 +129,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651608529299</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="etats[].type et etats[].color">
+      <created>1651613865471</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1651613865471</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -150,7 +154,8 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="gen(int side)" />
     <MESSAGE value="fonctions" />
-    <option name="LAST_COMMIT_MESSAGE" value="fonctions" />
+    <MESSAGE value="etats[].type et etats[].color" />
+    <option name="LAST_COMMIT_MESSAGE" value="etats[].type et etats[].color" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

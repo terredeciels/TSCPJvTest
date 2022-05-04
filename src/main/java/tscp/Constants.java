@@ -11,16 +11,22 @@ public interface Constants {
             BLACK_LONG_CASTLE = 4,
             BLACK_SHORT_CASTLE = 8;
     short MIN_STONE = -6, MAX_STONE = 6, NO_STONE = 0;
+
     int NO_COL = -1, NO_ROW = -1, OUT = -1;
+
     int BLANC = 0;
     int DARK = 1;
+
+    int EMPTY = 6;
+
     int PAWN = 0;
     int KNIGHT = 1;
     int BISHOP = 2;
     int ROOK = 3;
     int QUEEN = 4;
     int KING = 5;
-    int EMPTY = 6;
+
+
     int A1 = 56;
     int B1 = 57;
     int C1 = 58;
@@ -55,5 +61,11 @@ public interface Constants {
             {-11, -10, -9, -1, 1, 9, 10, 11}};
 
     int[] castle_mask = {7, 15, 15, 15, 3, 15, 15, 11, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 13, 15, 15, 15, 12, 15, 15, 14};
-
+    int[] CASES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+            10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+            30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+            50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+            60, 61, 62, 63};
 }
