@@ -97,27 +97,20 @@ public class Board implements Constants {
     }
 
     private boolean attack(int sq, int s) {
-        for (int c = 0; c < 64; ++c) {
+        for (int c : CASES)
             if (etats[c].color == s) {
                 if (etats[c].type == PAWN) {
                     if (s == BLANC) {
                         if (pion_side_blanc_attack.apply(sq, c)) return true;
                     } else if (pion_side_noir_attack.apply(sq, c)) return true;
-                } else {
-                    // recursive ?
-                    for (int dir = 0; dir < nb_dir[etats[c].type]; ++dir) {
-
-                        int _c = c;
-                        do {
-                            _c = getMailbox(etats[c].type, dir, _c);
-                            if (_c == sq) return true;
-                        } while (_c != OUT && etats[_c].color == EMPTY && slide[etats[c].type]);
-
-                    }
-                    //
+                } else for (int dir = 0; dir < nb_dir[etats[c].type]; ++dir) {
+                    int _c = c;
+                    do {
+                        _c = getMailbox(etats[c].type, dir, _c);
+                        if (_c == sq) return true;
+                    } while (_c != OUT && etats[_c].color == EMPTY && slide[etats[c].type]);
                 }
             }
-        }
         return false;
     }
 
